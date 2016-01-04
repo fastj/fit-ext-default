@@ -1,0 +1,22 @@
+intf org.fastj.ext.fcall.HttpFunc http_get
+intf org.fastj.ext.fcall.HttpFunc http_post
+intf org.fastj.ext.fcall.HttpFunc http_put
+intf org.fastj.ext.fcall.HttpFunc http_delete
+intf org.fastj.ext.fcall.HttpFunc http_patch
+intf org.fastj.ext.fcall.HttpFunc http_options
+intf org.fastj.ext.fcall.SSHFunc ssh_connect
+intf org.fastj.ext.fcall.SSHFunc ssh_exec
+intf org.fastj.ext.fcall.SSHFunc ssh_close
+intf org.fastj.ext.fcall.SftpFunc sftp_upload
+intf org.fastj.ext.fcall.SftpFunc sftp_download
+intf org.fastj.ext.fcall.SnmpFunc snmp_get
+intf org.fastj.ext.fcall.SnmpFunc snmp_set
+intf org.fastj.ext.fcall.SnmpFunc snmp_table
+
+lib extlib/httpclient-4.3.5.jar
+lib extlib/httpcore-4.3.2.jar
+lib extlib/httpmime-4.3.5.jar
+lib extlib/jsch-0.1.50.jar
+lib extlib/net.jar
+lib extlib/org.apache.commons.logging_1.1.1.v201101211721.jar
+lib extlib/snmp4j-2.2.2.jar
