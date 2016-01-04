@@ -7,7 +7,15 @@
 	<property name="jarname" value="fit-ext-default.jar" />
 	
 	<path id="lib">
-		<fileset file="${lib.dir}/*.jar" />
+		<fileset file="${lib.dir}/httpclient-4.3.5.jar" />
+		<fileset file="${lib.dir}/httpcore-4.3.2.jar" />
+		<fileset file="${lib.dir}/httpmime-4.3.5.jar" />
+		<fileset file="${lib.dir}/jsch-0.1.50.jar" />
+		<fileset file="${lib.dir}/org.apache.commons.logging_1.1.1.v201101211721.jar" />
+		<fileset file="${lib.dir}/snmp4j-2.2.2.jar" />
+		<fileset file="${lib.dir}/net.jar" />
+		<fileset file="${lib.dir}/fit.jar" />
+		
 		<pathelement path="${classes.dir}" />
 	</path>
 	
