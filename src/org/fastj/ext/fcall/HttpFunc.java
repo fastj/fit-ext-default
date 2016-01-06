@@ -95,12 +95,12 @@ public class HttpFunc implements IFuncCall{
 		hreq.setMethod(method);
 		hreq.setContent(expend(table.getPara("content", null), table));
 		
-		if (table.lcontains("download"))
+		if (table.getParent().lcontains("download"))
 		{
 			String dfile = expendVar("download", table);
 			hreq.setDownloadFile(dfile);
 		}
-		else if (table.lcontains("upload"))
+		else if (table.getParent().lcontains("upload"))
 		{
 			TProject tp = ctx.getProject();
 			String upstr = expendVar("upload", table);
@@ -192,7 +192,7 @@ public class HttpFunc implements IFuncCall{
 	
 	private void sign(HttpReq hreq, ParameterTable table) throws DataInvalidException, ParamIncertitudeException
 	{
-		if (!table.lcontains("sign")) return;
+		if (!table.getParent().lcontains("sign")) return;
 		
 		String signExpr = table.getPara("sign", null);
 		

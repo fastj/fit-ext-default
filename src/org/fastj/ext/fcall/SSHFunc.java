@@ -163,21 +163,21 @@ public class SSHFunc implements IFuncCall{
 	 */
 	private void setConn(SshConnection ssh, ParameterTable table) throws DataInvalidException
 	{
-		if (table.lcontains("clean_setting"))
+		if (table.getParent().lcontains("clean_setting"))
 		{
 			ssh.clean();
 		}
 		
-		if (table.lcontains("autosend"))
+		if (table.getParent().lcontains("autosend"))
 		{
-			String astr = table.get("autosend").getValue();
+			String astr = table.getParent().get("autosend").getValue();
 			String[] ass = StringUtil.readFuncParam(astr);
 			if (ass.length % 2 == 0)
 			{
 				NVar nvar = new NVar();
 				for (int i = 0; i <= ass.length - 2; i += 2)
 				{
-					nvar.add(ass[i], ass[i + 1]);
+					nvar.add(ass[i], StringUtil.sendStr(ass[i + 1]));
 				}
 				ssh.with(nvar);
 			}
@@ -187,9 +187,9 @@ public class SSHFunc implements IFuncCall{
 			}
 		}
 		
-		if (table.lcontains("ends"))
+		if (table.getParent().lcontains("ends"))
 		{
-			String endstr = table.get("ends").getValue();
+			String endstr = table.getParent().get("ends").getValue();
 			String[] ess = StringUtil.readFuncParam(endstr);
 			ssh.with(ess);
 		}
