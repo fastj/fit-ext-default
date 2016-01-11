@@ -22,8 +22,6 @@ import java.util.Map;
 import org.fastj.net.api.HttpRsp;
 import org.fastj.net.api.Response;
 
-//import com.fasterxml.jackson.databind.ObjectMapper;
-
 /**
  * JSON取值，xml转换
  * 

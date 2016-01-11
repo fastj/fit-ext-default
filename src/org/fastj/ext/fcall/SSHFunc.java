@@ -26,12 +26,12 @@ import org.fastj.fit.intf.IFuncCall;
 import org.fastj.fit.intf.ParamIncertitudeException;
 import org.fastj.fit.intf.ParameterTable;
 import org.fastj.fit.intf.TContext;
-import org.fastj.fit.tool.StringUtil;
 import org.fastj.net.api.NVar;
 import org.fastj.net.api.Response;
 import org.fastj.net.api.SshConnection;
 import org.fastj.net.impl.JSchImpl;
 import org.fastj.net.protocol.Protocol;
+import static org.fastj.fit.tool.StringUtil.*;
 
 /**
  * 
@@ -100,14 +100,14 @@ public class SSHFunc implements IFuncCall{
 			
 		case "ssh_exec":
 			SshConnection ssh_conn = ((SSHCloseableResource) ctx.get("__ssh_connection__")).getSsh();
-			String cmd = StringUtil.expend(argStr, table);
+			String cmd = expend(argStr, table);
 			
 			if (ssh_conn != null)
 			{
 				setConn(ssh_conn, table);
 				int timeout = 15000;
 				try {
-					timeout = Integer.valueOf(table.getPara("timeout", "15000"));
+					timeout = Integer.valueOf(expend(table.getPara("timeout", "15000"), table));
 				} catch (NumberFormatException e) {}
 				Response<String> resp = ssh_conn.exec(timeout, cmd);
 				FuncResponse exefr = new FuncResponse();
@@ -160,8 +160,9 @@ public class SSHFunc implements IFuncCall{
 	 * 
 	 * @param ssh
 	 * @param table
+	 * @throws ParamIncertitudeException 
 	 */
-	private void setConn(SshConnection ssh, ParameterTable table) throws DataInvalidException
+	private void setConn(SshConnection ssh, ParameterTable table) throws DataInvalidException, ParamIncertitudeException
 	{
 		if (table.getParent().lcontains("clean_setting"))
 		{
@@ -171,13 +172,13 @@ public class SSHFunc implements IFuncCall{
 		if (table.getParent().lcontains("autosend"))
 		{
 			String astr = table.getParent().get("autosend").getValue();
-			String[] ass = StringUtil.readFuncParam(astr);
+			String[] ass = readFuncParam(astr);
 			if (ass.length % 2 == 0)
 			{
 				NVar nvar = new NVar();
 				for (int i = 0; i <= ass.length - 2; i += 2)
 				{
-					nvar.add(ass[i], StringUtil.sendStr(ass[i + 1]));
+					nvar.add(ass[i], sendStr(expend(ass[i + 1], table)));
 				}
 				ssh.with(nvar);
 			}
@@ -190,7 +191,7 @@ public class SSHFunc implements IFuncCall{
 		if (table.getParent().lcontains("ends"))
 		{
 			String endstr = table.getParent().get("ends").getValue();
-			String[] ess = StringUtil.readFuncParam(endstr);
+			String[] ess = readFuncParam(endstr);
 			ssh.with(ess);
 		}
 		
