@@ -205,6 +205,6 @@ public class HttpFunc implements IFuncCall{
 		String inputs[] = new String[args.length - 1];
 		System.arraycopy(args, 1, inputs, 0, inputs.length);
 		
-		HttpSignFactory.sign(args[0], hreq.getMethod(), hreq.getUrl(), hreq.getContent(), hreq.getHeaders(), table, args);
+		HttpSignFactory.sign(args[0], hreq.getMethod(), hreq.getUrl(), hreq.getContent(), hreq.getHeaders(), table, inputs);
 	}
 }
