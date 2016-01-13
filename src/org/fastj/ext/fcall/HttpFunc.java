@@ -26,6 +26,7 @@ import org.fastj.fit.intf.ParameterTable;
 import org.fastj.fit.intf.TContext;
 import org.fastj.fit.intf.TProject;
 import org.fastj.fit.model.Consts;
+import org.fastj.fit.tool.JSONHelper;
 
 import static org.fastj.fit.tool.StringUtil.*;
 
@@ -129,6 +130,9 @@ public class HttpFunc implements IFuncCall{
 		}
 		
 		sign(hreq, table);
+		
+		String reqStr = JSONHelper.jsonString(hreq);
+		table.add("_request_", reqStr);
 		
 		HttpConnection conn = new HttpImpl();
 		Response<HttpRsp<String>> hresp = conn.exec(hreq);
