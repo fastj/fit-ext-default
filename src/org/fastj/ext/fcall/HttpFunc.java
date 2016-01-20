@@ -171,6 +171,9 @@ public class HttpFunc implements IFuncCall{
 	 */
 	private void expendHeader(String headExpr, ParameterTable ptable, HttpReq req) throws ParamIncertitudeException, DataInvalidException
 	{
+		String headerName = headExpr;
+		headExpr = ptable.gcontains(headExpr) ? trim(expendVar(headExpr, ptable)) : headExpr;
+		
 		if (headExpr.startsWith(Consts.PATTERN_DATATABLE))
 		{
 			String expr = headExpr.substring(Consts.PATTERN_DATATABLE.length());
@@ -190,7 +193,7 @@ public class HttpFunc implements IFuncCall{
 		}
 		else
 		{
-			req.addHeader(headExpr, trim(expendVar(headExpr, ptable)));
+			req.addHeader(headerName, headExpr);
 		}
 	}
 	
