@@ -1,3 +1,4 @@
+intf org.fastj.ext.fcall.CmdFunc
 intf org.fastj.ext.fcall.HttpFunc http_get
 intf org.fastj.ext.fcall.HttpFunc http_post
 intf org.fastj.ext.fcall.HttpFunc http_put
