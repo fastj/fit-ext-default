@@ -64,7 +64,8 @@ public class SSHFunc implements IFuncCall{
 
 	@Override
 	public FuncResponse run(TContext ctx, ParameterTable table, String argStr) throws ParamIncertitudeException, DataInvalidException {
-		
+		String connId = "__ssh_connection__";
+		SSHCloseableResource sshRef = null;
 		switch(name)
 		{
 		case "ssh_connect":
@@ -75,9 +76,10 @@ public class SSHFunc implements IFuncCall{
 			Response<String> sshresp = ssh.open(ptc);
 			FuncResponse fr = new FuncResponse();
 			fr.setRequest("ssh_connect " + ptc.toString());
+			connId = table.getParent().lcontains("ssh_id") ? trim(expendVar("ssh_id", table.getParent())) : "__ssh_connection__";
 			if (ssh.isConnected())
 			{
-				ctx.put("__ssh_connection__", new SSHCloseableResource(ssh));
+				ctx.put(connId, new SSHCloseableResource(ssh));
 				
 				fr.setCode(Response.OK);
 				HashMap<String, Object> entity = new HashMap<String, Object>();
@@ -99,8 +101,27 @@ public class SSHFunc implements IFuncCall{
 			}
 			
 		case "ssh_exec":
-			SshConnection ssh_conn = ((SSHCloseableResource) ctx.get("__ssh_connection__")).getSsh();
 			String cmd = expend(argStr, table);
+			connId = table.getParent().lcontains("ssh_id") 
+					? trim(expendVar("ssh_id", table.getParent())) 
+					: "__ssh_connection__";
+			
+			sshRef = ((SSHCloseableResource) ctx.get(connId));
+			if (sshRef == null)
+			{
+				FuncResponse exefr = new FuncResponse();
+				exefr.setRequest("ssh_exec " + cmd);
+				HashMap<String, Object> entity = new HashMap<String, Object>();
+				entity.put("content", "");
+				entity.put("code", Response.INVALID_PARAM);
+				exefr.setEntity(entity);
+				exefr.setCode(Response.INVALID_PARAM);
+				exefr.setPhrase("Cannot find ssh connection, id="+ connId);
+				return exefr;
+			}
+			
+			SshConnection ssh_conn = sshRef.getSsh();
+			
 			
 			if (ssh_conn != null)
 			{
@@ -135,13 +156,14 @@ public class SSHFunc implements IFuncCall{
 				exefr.setPhrase("No SSH connection.");
 				return exefr;
 			}
-			
 		case "ssh_close":
-			SshConnection sshconn = ((SSHCloseableResource) ctx.get("__ssh_connection__")).getSsh();
-			if (sshconn != null)
-			{
-				sshconn.close();
-			}
+			String temp = trim(expend(argStr, table));
+			temp = (temp == null | temp.isEmpty()) ? "__ssh_connection__" : temp;
+			connId = table.getParent().lcontains("ssh_id") 
+			          ? trim(expendVar("ssh_id", table.getParent())) 
+			          : temp;
+			ctx.closeResource(connId);
+			
 			FuncResponse clfr = new FuncResponse();
 			clfr.setCode(Response.OK);
 			clfr.setRequest("ssh_close()");
