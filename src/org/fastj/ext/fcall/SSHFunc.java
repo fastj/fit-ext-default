@@ -66,11 +66,16 @@ public class SSHFunc implements IFuncCall{
 	public FuncResponse run(TContext ctx, ParameterTable table, String argStr) throws ParamIncertitudeException, DataInvalidException {
 		String connId = "__ssh_connection__";
 		SSHCloseableResource sshRef = null;
+		
+		int timeout = 15000;
 		switch(name)
 		{
 		case "ssh_connect":
 			Protocol ptc = ProtocolTool.getSSHProtocol(argStr, table);
 			if (ptc == null) throw new DataInvalidException("Cannot create SSH Protocol: " + argStr);
+			timeout = Integer.valueOf(expend(table.getPara("timeout", "15000"), table));
+			ptc.setTimeout(timeout);
+			
 			SshConnection ssh = new JSchImpl();
 			setConn(ssh, table);
 			Response<String> sshresp = ssh.open(ptc);
@@ -99,7 +104,7 @@ public class SSHFunc implements IFuncCall{
 				
 				return fr;
 			}
-			
+		case "ssh_cmd":
 		case "ssh_exec":
 			String cmd = expend(argStr, table);
 			connId = table.getParent().lcontains("ssh_id") 
@@ -110,7 +115,7 @@ public class SSHFunc implements IFuncCall{
 			if (sshRef == null)
 			{
 				FuncResponse exefr = new FuncResponse();
-				exefr.setRequest("ssh_exec " + cmd);
+				exefr.setRequest(name + " " + cmd);
 				HashMap<String, Object> entity = new HashMap<String, Object>();
 				entity.put("content", "");
 				entity.put("code", Response.INVALID_PARAM);
@@ -122,20 +127,19 @@ public class SSHFunc implements IFuncCall{
 			
 			SshConnection ssh_conn = sshRef.getSsh();
 			
-			
 			if (ssh_conn != null)
 			{
 				setConn(ssh_conn, table);
-				int timeout = 15000;
+				timeout = 15000;
 				try {
 					timeout = Integer.valueOf(expend(table.getPara("timeout", "15000"), table));
 				} catch (NumberFormatException e) {}
-				Response<String> resp = ssh_conn.exec(timeout, cmd);
+				Response<String> resp = "ssh_exec".equals(name) ? ssh_conn.exec(timeout, cmd) : ssh_conn.cmd(timeout, cmd);
 				FuncResponse exefr = new FuncResponse();
 				exefr.setCode(resp.getCode());
-				exefr.setRequest("ssh_exec " + cmd);
+				exefr.setRequest(name + " " + cmd);
 				HashMap<String, Object> entity = new HashMap<String, Object>();
-				entity.put("content", resp.getEntity());
+				entity.put("content", "ssh_exec".equals(name) ? trimExecLine(resp.getEntity()) : resp.getEntity());
 				entity.put("message", resp.getPhrase());
 				entity.put("code", resp.getCode());
 				
@@ -148,7 +152,7 @@ public class SSHFunc implements IFuncCall{
 			{
 				FuncResponse exefr = new FuncResponse();
 				exefr.setCode(Response.INTERNAL_ERROR);
-				exefr.setRequest("ssh_exec " + cmd);
+				exefr.setRequest(name + " " + cmd);
 				HashMap<String, Object> entity = new HashMap<String, Object>();
 				entity.put("message", "No SSH connection.");
 				entity.put("code", Response.INTERNAL_ERROR);
@@ -235,6 +239,16 @@ public class SSHFunc implements IFuncCall{
 			ssh.close();
 		}
 		
+	}
+	
+	private String trimExecLine(String content){
+		int i = content.indexOf('\n');
+		if (i < 0) return content;
+		
+		String rlt = content.substring(i + 1);
+		i = rlt.lastIndexOf('\n');
+		if (i < 0) return rlt;
+		return rlt.substring(0, i).trim();
 	}
 	
 }
