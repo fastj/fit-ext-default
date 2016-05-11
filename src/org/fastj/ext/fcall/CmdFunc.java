@@ -31,11 +31,11 @@ import org.fastj.net.impl.CmdLineImpl;
 import static org.fastj.fit.tool.StringUtil.*;
 
 /**
- * @command cmd(command)
+ * @command cmd([timeout ,]command)
  * 
  * @param cmd_env = env1, envValue1, env2, envValue2
  * @param cmd_autosend = keyStr1, value1, keyStr2, value2
- * @param cmd_timeout = 15000
+ * @param cmd_timeout = 30000
  * 
  * @author zhouqingquan
  *
@@ -52,6 +52,7 @@ public class CmdFunc implements IFuncCall{
 		
 		CmdLine cmd = new CmdLineImpl();
 		
+		String[] args = readFuncParam(argStr);
 		String[] envs = readFuncParam(expend(table.getPara("cmd_env", ""), table));
 		String[] autos = readFuncParam(expend(table.getPara("cmd_autosend", ""), table));
 		if (envs.length % 2 == 0 && autos.length % 2 == 0)
@@ -71,7 +72,11 @@ public class CmdFunc implements IFuncCall{
 			throw new DataInvalidException("Env or AutoSend invalid.");
 		}
 		
-		Response<String> resp = cmd.exec(table.getInt("cmd_timeout", 30000), readCmdParam(expend(argStr, table)));
+		String tmoutStr = args.length >= 2 ? args[0].trim() : null;
+		argStr = args.length >= 2 ? args[1].trim() : argStr;
+		int tmout = tmoutStr == null ? table.getInt("cmd_timeout", 30000) : Integer.valueOf(tmoutStr);
+		
+		Response<String> resp = cmd.exec(tmout, readCmdParam(expend(argStr, table)));
 		
 		FuncResponse fr = new FuncResponse();
 		fr.setCode(resp.getCode());
