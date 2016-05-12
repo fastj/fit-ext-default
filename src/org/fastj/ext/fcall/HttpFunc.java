@@ -74,15 +74,17 @@ public class HttpFunc implements IFuncCall{
 		Lock lock = tp.getHblock().readLock();
 		lock.lock();
 		try {
-			return innerRun(ctx, table, argStr);
+			return innerRun(ctx, table, readFuncParam(argStr));
 		} finally {
 			lock.unlock();
 		}
 	}
 	
-	public FuncResponse innerRun(TContext ctx, ParameterTable table, String argStr) throws ParamIncertitudeException, DataInvalidException {
+	public FuncResponse innerRun(TContext ctx, ParameterTable table, String[] args) throws ParamIncertitudeException, DataInvalidException {
+		
+		if (args == null || args.length < 1) throw new DataInvalidException("HttpReq requires >=1 parameters.");
+		
 		String method = name.split("_")[1];
-		String args[] = readFuncParam(argStr);
 		
 		for (int i = 0; i < args.length; i++)
 		{
@@ -203,6 +205,9 @@ public class HttpFunc implements IFuncCall{
 		String signExpr = table.getPara("sign", null);
 		
 		String [] args = readFuncParam(signExpr);
+		
+		if (args.length <= 1) throw new DataInvalidException("Http sign requires >1 parameters.");
+		
 		for (int i = 0; i < args.length; i ++)
 		{
 			args[i] = trim(expend(args[i], table));
@@ -213,4 +218,5 @@ public class HttpFunc implements IFuncCall{
 		
 		HttpSignFactory.sign(args[0], hreq.getMethod(), hreq.getUrl(), hreq.getContent(), hreq.getHeaders(), table, inputs);
 	}
+	
 }
