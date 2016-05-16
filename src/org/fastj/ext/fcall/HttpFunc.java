@@ -95,7 +95,7 @@ public class HttpFunc implements IFuncCall{
 		hreq.setProxy(ProtocolTool.getProxy(table));
 		hreq.setUrl(getUrl(args[0], table));
 		hreq.setMethod(method);
-		hreq.setContent(expend(table.getPara("content", null), table));
+		hreq.setContent(expend(table.getPara("content", ""), table));
 		
 		if (table.getParent().lcontains("download"))
 		{

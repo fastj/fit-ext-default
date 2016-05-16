@@ -162,7 +162,7 @@ public class SSHFunc implements IFuncCall{
 			}
 		case "ssh_close":
 			String temp = trim(expend(argStr, table));
-			temp = (temp == null | temp.isEmpty()) ? "__ssh_connection__" : temp;
+			temp = (temp == null || temp.isEmpty()) ? "__ssh_connection__" : temp;
 			connId = table.getParent().lcontains("ssh_id") 
 			          ? trim(expendVar("ssh_id", table.getParent())) 
 			          : temp;
