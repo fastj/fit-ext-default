@@ -133,7 +133,9 @@ public class SSHFunc implements IFuncCall{
 				timeout = 15000;
 				try {
 					timeout = Integer.valueOf(expend(table.getPara("timeout", "15000"), table));
-				} catch (NumberFormatException e) {}
+				} catch (NumberFormatException e) {
+					throw new DataInvalidException("Var 'timeout' is not a number.");
+				}
 				Response<String> resp = "ssh_exec".equals(name) ? ssh_conn.exec(timeout, cmd) : ssh_conn.cmd(timeout, cmd);
 				FuncResponse exefr = new FuncResponse();
 				exefr.setCode(resp.getCode());
@@ -162,7 +164,7 @@ public class SSHFunc implements IFuncCall{
 			}
 		case "ssh_close":
 			String temp = trim(expend(argStr, table));
-			temp = (temp == null || temp.isEmpty()) ? "__ssh_connection__" : temp;
+			temp = temp.isEmpty() ? "__ssh_connection__" : temp;
 			connId = table.getParent().lcontains("ssh_id") 
 			          ? trim(expendVar("ssh_id", table.getParent())) 
 			          : temp;
