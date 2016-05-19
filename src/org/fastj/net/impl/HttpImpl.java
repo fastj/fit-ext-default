@@ -31,6 +31,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.util.EntityUtils;
+import org.fastj.fit.log.LogUtil;
 import org.fastj.net.api.HttpConnection;
 import org.fastj.net.api.HttpReq;
 import org.fastj.net.api.HttpRsp;
@@ -63,8 +64,11 @@ public class HttpImpl implements HttpConnection {
 			sslcontext.init(null, new TrustManager[]{tm}, new SecureRandom());
 			ssl = new SSLConnectionSocketFactory(sslcontext, new AllowAllHostnameVerifier());
 		} catch (final SecurityException ignore) {
+			LogUtil.error("Create SSLCtx : {}", ignore.getMessage());
 		} catch (final KeyManagementException ignore) {
+			LogUtil.error("Create SSLCtx : {}", ignore.getMessage());
 		} catch (final NoSuchAlgorithmException ignore) {
+			LogUtil.error("Create SSLCtx : {}", ignore.getMessage());
 		}
 
 		final Registry<ConnectionSocketFactory> sfr = RegistryBuilder
@@ -118,10 +122,9 @@ public class HttpImpl implements HttpConnection {
 					dfile.getParentFile().mkdirs();
 				}
 				
-				OutputStream out = null;
-				try {
-					out = new FileOutputStream(dfile);
-					InputStream in = entity.getContent();
+				try (OutputStream out = new FileOutputStream(dfile);
+					 InputStream in = entity.getContent();){
+					
 					byte [] buff = new byte[512];
 					int len = 0;
 					while((len = in.read(buff)) > 0)
@@ -132,16 +135,6 @@ public class HttpImpl implements HttpConnection {
 					resp.setCode(Response.IO_EXCEPTION);
 					resp.getEntity().setHttpCode(1000);
 					resp.setPhrase(e.getMessage());
-				}
-				finally
-				{
-					if (out != null)
-					{
-						try {
-							out.close();
-						} catch (Exception e) {
-						}
-					}
 				}
 			}
 		} catch (ClientProtocolException e) {
@@ -157,6 +150,7 @@ public class HttpImpl implements HttpConnection {
 				try {
 					response.close();
 				} catch (IOException ignore) {
+					LogUtil.error("HTTP exec : {}", ignore.getMessage());
 				}
 			}
 		}

@@ -14,6 +14,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.fastj.fit.log.LogUtil;
 import org.fastj.net.api.NVar;
 import org.fastj.net.api.Response;
 import org.fastj.net.api.SshConnection;
@@ -127,7 +128,6 @@ public class JSchImpl implements SshConnection {
 						((UserModeParam) param).getPassword(),
 						param.getProxy());
 			} catch (Throwable e) {
-				// TODO log
 				currResp.setCode(Response.UNKOWN_ERROR);
 				if ("Auth fail".equalsIgnoreCase(e.getMessage().trim()))
 				{
@@ -146,7 +146,6 @@ public class JSchImpl implements SshConnection {
 						((KeyModeParam) param).getPassphrase(),
 						param.getProxy());
 			} catch (Throwable e) {
-				// TODO log
 				currResp.setCode(Response.UNKOWN_ERROR);
 				if ("Auth fail".equalsIgnoreCase(e.getMessage().trim()))
 				{
@@ -431,6 +430,7 @@ public class JSchImpl implements SshConnection {
 					try {
 						session.sendKeepAliveMsg();
 					} catch (Exception e) {
+						LogUtil.error("HeartBeat fail: ", e.getMessage());
 					}
 					finally{
 						lock.unlock();
@@ -537,6 +537,7 @@ public class JSchImpl implements SshConnection {
 		try {
 			io.close();
 		} catch (IOException e) {
+			LogUtil.error("Close IO fail : {}", e.getMessage());
 		}
 		io = null;
 	}

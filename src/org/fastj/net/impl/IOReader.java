@@ -7,6 +7,8 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 
+import org.fastj.fit.log.LogUtil;
+
 public class IOReader implements Runnable {
 	private HashMap<String, String> inputs = new HashMap<String, String>();
 	private InputStream in;
@@ -88,7 +90,7 @@ public class IOReader implements Runnable {
 							out.write(inputs.get(key).getBytes());
 							out.flush();
 						} catch (IOException e) {
-							e.printStackTrace();
+							LogUtil.error("IOR.checkInputs sendfail : {}", e.getMessage());
 							eof = true;
 						}
 					}

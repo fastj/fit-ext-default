@@ -289,7 +289,7 @@ public class SftpJSchImpl implements SftpConnection{
 		}
 
 		public void showMessage(String m) {
-			System.out.println(m);
+			
 		}
 	}
 	

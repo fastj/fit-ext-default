@@ -199,7 +199,7 @@ public class SSHFunc implements IFuncCall{
 		
 		if (table.getParent().lcontains("autosend"))
 		{
-			String astr = table.getParent().get("autosend").getValue();
+			String astr = table.getParent().getPara("autosend", "");
 			String[] ass = readFuncParam(astr);
 			if (ass.length % 2 == 0)
 			{
@@ -218,7 +218,7 @@ public class SSHFunc implements IFuncCall{
 		
 		if (table.getParent().lcontains("ends"))
 		{
-			String endstr = table.getParent().get("ends").getValue();
+			String endstr = table.getParent().getPara("ends", "");
 			String[] ess = readFuncParam(endstr);
 			ssh.with(ess);
 		}

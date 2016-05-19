@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
+import org.fastj.fit.log.LogUtil;
 import org.fastj.net.api.*;
 import org.fastj.net.impl.SnmpUtil.SnmpReqNode;
 import org.fastj.net.impl.SnmpUtil.VarNode;
@@ -120,6 +121,7 @@ public class Snmp4jImpl implements SnmpConnection, PDUFactory{
 				connection.close();
 			}
 		} catch (IOException e) {
+			LogUtil.error("Close SNMP connection fail: {}", e.getMessage());
 		}
 	}
 
@@ -188,8 +190,7 @@ public class Snmp4jImpl implements SnmpConnection, PDUFactory{
 				resp.setEntity(t);
 				return resp;
 			} catch (Throwable e) {
-				e.printStackTrace();
-				//TODO
+				LogUtil.error("SNMP get fail: {}", e.getMessage());
 				resp.setCode(Response.UNKOWN_ERROR);
 				resp.setPhrase(e.getMessage());
 			} 
@@ -237,12 +238,10 @@ public class Snmp4jImpl implements SnmpConnection, PDUFactory{
 		} catch (IOException e) {
 			sresp.setCode(Response.IO_EXCEPTION);
 			sresp.setPhrase(e.getMessage());
-			e.printStackTrace();
 		}
 		catch (Throwable e) {
 			sresp.setCode(Response.UNKOWN_ERROR);
 			sresp.setPhrase(e.getMessage());
-			e.printStackTrace();
 		}
 		
 		return sresp;
