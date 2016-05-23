@@ -179,7 +179,7 @@ public class JSchImpl implements SshConnection {
 				if (!maps.containsKey(nkey))
 				{
 					String v = toContinues.get(key);
-					if (key != null && !key.isEmpty() && v != null && !v.isEmpty())
+					if (!key.isEmpty() && v != null && !v.isEmpty())
 					{
 						if (v.endsWith("\\n"))
 						{
@@ -217,7 +217,6 @@ public class JSchImpl implements SshConnection {
 			return currResp;
 		}
 
-		lock.lock();
 		try {
 			initShell();
 			if (currResp.getCode() != Response.OK) {
@@ -242,9 +241,6 @@ public class JSchImpl implements SshConnection {
 			currResp.setCode(Response.UNKOWN_ERROR);
 			currResp.setPhrase(e.getMessage());
 			return currResp;
-		}finally
-		{
-			lock.unlock();
 		}
 		
 		return waitComplete(timeOut);

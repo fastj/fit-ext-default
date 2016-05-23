@@ -428,7 +428,7 @@ public class Snmp4jImpl implements SnmpConnection, PDUFactory{
 	    public void finished(TableEvent event) {
 	      finished = true;
 	      synchronized (event.getUserObject()) {
-	        event.getUserObject().notify();
+	        event.getUserObject().notifyAll();
 	      }
 	    }
 
@@ -452,6 +452,10 @@ public class Snmp4jImpl implements SnmpConnection, PDUFactory{
 				}
 				
 				SnmpReqNode rn = SnmpUtil.getReqNode(clazz);
+				if (rn == null) {
+					return false;
+				}
+				
 				T rowData = clazz.newInstance();
 				for (VarNode vn : rn.reqVars)
 				{
