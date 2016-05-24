@@ -809,6 +809,7 @@ public class JSchImpl implements SshConnection {
 							int len = Integer.parseInt(new String(cmd.buff, 2, cmd.count - 3));
 							moveLeft(len);
 						} catch (NumberFormatException e) {
+							LogUtil.error("Invalid VT100 MV: {}", new String(cmd.buff, 0, cmd.count));
 						}
 	    			}
 	    		}

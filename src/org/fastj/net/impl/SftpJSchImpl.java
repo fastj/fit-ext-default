@@ -1,7 +1,6 @@
 package org.fastj.net.impl;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -172,9 +171,9 @@ public class SftpJSchImpl implements SftpConnection{
 	}
 	
 	public Response<String> upload(String dir, String rfile, String lfile){
-		try {
-			return upload(dir, new FileInputStream(lfile), rfile);
-		} catch (FileNotFoundException e) {
+		try (FileInputStream fins = new FileInputStream(lfile)){
+			return upload(dir, fins, rfile);
+		} catch (IOException e) {
 			Response<String> resp = new Response<String>();
 			resp.setCode(Response.INVALID_PARAM);
 			resp.setPhrase("File not found: " + lfile);
@@ -202,9 +201,9 @@ public class SftpJSchImpl implements SftpConnection{
 	}
 	
 	public Response<String> download(String dir, String rfile, String lfile){
-		try {
-			return download(dir, rfile, new FileOutputStream(lfile));
-		} catch (FileNotFoundException e) {
+		try (FileOutputStream fout = new FileOutputStream(lfile)) {
+			return download(dir, rfile, fout);
+		} catch (IOException e) {
 			Response<String> resp = new Response<String>();
 			return resp;
 		}
